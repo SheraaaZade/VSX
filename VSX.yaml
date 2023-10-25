@@ -1,0 +1,226 @@
+openapi: 3.0.3 
+
+info: 
+  title: Vinci Stock eXchange 
+  description: place boursière  
+  version: 1.0.0 
+
+servers: 
+  - url: http://localhost:9001 
+    description: Development server 
+
+paths: 
+
+/accounts: 
+
+post: 
+      summary: Créer un compte 
+      requestBody: 
+        description: Le compte à créer 
+        content: 
+          'application/json': 
+            schema: 
+              $ref:'#/components/schemas/account 
+
+      responses: 
+        409: 
+          description: Le compte existe déjà 
+          content: 
+            'application/json': 
+              schema: 
+                $ref: '#/components/schemas/account' 
+
+    get: 
+      summary: Lire tous les comptes 
+      description: Récupère la liste des comptes des investisseurs. 
+      responses: 
+        200: 
+          description: Retourne la liste de tous les comptes 
+          content: 
+            'application/json': 
+              schema: 
+                type: array 
+                items: 
+                  $ref: '#/components/schemas/account' 
+
+/accounts/{id}: 
+    parameters: 
+      - name: id 
+        in: path 
+        description: id du compte 
+        required: true 
+        schema: 
+          type: string 
+          example: 1 
+        style: simple 
+
+    get: 
+      summary: Lire le compte 
+      responses: 
+        404: 
+          description: Le compte est inexistant 
+        200: 
+          description: Retourne le compte 
+          content: 
+            'application/json': 
+              schema: 
+                $ref: '#/components/schemas/account'
+    put: 
+      summary: Mise à jour du compte 
+      requestBody: 
+        description: Nouvelles valeurs du compte 
+        content: 
+          'application/json': 
+
+            schema: 
+
+              $ref: '#/components/schemas/account'
+
+      responses: 
+        400: 
+          description: Aucun match avec l’id du compte 
+        404: 
+          description: Le compte est inexistant 
+        200: 
+          description: Updated product, returned old values 
+          content: 
+            'application/json': 
+              schema: 
+                $ref: '#/components/schemas/account' 
+
+    delete: 
+      summary: Supprimer le compte 
+      responses: 
+        404: 
+          description: Le compte est inexistant 
+        200: 
+          description: Compte supprimé 
+
+/ordres: 
+
+get: 
+
+      summary: Read all orders 
+      responses: 
+        200: 
+          description: Returned list of orders 
+          content: 
+            'application/json': 
+              schema: 
+                type: array 
+                items: 
+                  $ref: '#/components/schemas/order'
+
+    delete: 
+      summary: Delete all orders 
+      responses: 
+        200: 
+          description: All ordersare deleted
+
+/ordres/{id}: 
+
+	parameters: 
+     	 - name: id 
+      	   in: path 
+        	   description: id of the order 
+      	   required: true 
+        	    schema: 
+                          type: Integer 
+                          example: 1 
+	post:  
+	     sumarry: crée un ordre d’achat ou de vente  
+     content: 
+
+          'application/json': 
+	 schema: 
+              $ref: '#/components/schemas/ordre' 
+	responses: 
+        400: 
+          description: id does not match or ordre invalid 
+        409: 
+          description: Ordre already exists 
+        201: 
+          description: Created Ordre 
+
+get: 
+      summary: Read a order 
+      responses: 
+        404: 
+          description: Order not found 
+        200: 
+          description: Returned Order 
+          content: 
+            'application/json': 
+              schema: 
+                $ref: '#/components/schemas/order'
+    put: 
+      summary: Update a order 
+      requestBody: 
+        description: New values of the order 
+        content: 
+          'application/json': 
+            schema: 
+              $ref: '#/components/schemas/order'
+
+      responses: 
+
+        400: 
+          description: id does not match or order invalid 
+        404: 
+          description: Order not found 
+        200: 
+          description: Updated order 
+
+    delete: 
+      summary: Delete a order 
+      responses: 
+        404: 
+          description: Order not found 
+        200: 
+          description: Order video 
+
+/gateway: 
+
+/authentication: 
+
+/cotations : 
+
+/execution: 
+  summary:  (offre et la demande), Matching entre le carnet d’ordre et les prix 
+
+components: 
+  schemas: 
+    Compte: 
+      type: object 
+      properties: 
+        cash: 
+          type: integer 
+        titre: 
+          type: integer 
+      example: 
+        cash: 1000 
+        titre: 12 
+ 
+    Ordre: 
+      type: object 
+      properties: 
+        typeOrdre: 
+          type: string 
+          enum: 
+            - market 
+            - limit 
+        typePersonne: 
+            type: string 
+            enum: 
+              - vendeur 
+              - acheteur 
+      example: 
+        type: market 
+        titre: 12 
+    Authentication : 
+      type: object 
+      properties: 
+          username: 
+            type: string 
+          password: 
+            type: string
