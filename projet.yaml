@@ -1,0 +1,19 @@
+openapi: 3.0.3 
+
+info: 
+
+  title: Vinci Stock eXchange 
+
+  description: place boursière  
+
+  version: 1.0.0 
+
+servers: 
+
+  - url: http://localhost:9001 
+
+    description: Development server 
+
+ 
+
+paths: 
