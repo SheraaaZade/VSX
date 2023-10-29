@@ -35,7 +35,11 @@ paths:
 
       responses:
         '200':
-          $ref: "#/components/schemas/SuccessResponse"
+          description: La création du compte a été effectuée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Account"
         '400':
           $ref: "#/components/responses/InvalidRequest"
         '500':
@@ -44,7 +48,6 @@ paths:
   /accounts/{id}:
     parameters:
       - $ref: "#/components/parameters/AccountId"
-
     get:
       summary: Affiche l'état du compte ainsi que sa valeur totale
       responses:
@@ -56,6 +59,8 @@ paths:
             "application/json":
               schema:
                 $ref: "#/components/schemas/Account"
+        '500':
+          $ref: "#/components/responses/ServerError"
 
     put:
       summary: Mise à jour du compte
@@ -67,7 +72,7 @@ paths:
               $ref: "#/components/schemas/Account"
       responses:
         '400':
-          $ref: "#/components/responses/InvalidID"
+          $ref: "#/components/responses/InvalidRequest"
         '404':
           $ref: "#/components/responses/InvalidID"
         '200':
@@ -76,6 +81,8 @@ paths:
             "application/json":
               schema:
                 $ref: "#/components/schemas/Account"
+        '500':
+          $ref: "#/components/responses/ServerError"
 
     delete:
       summary: Supprimer le compte
@@ -90,6 +97,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Account"
+        '500':
+          $ref: "#/components/responses/ServerError"
 
   /addCash:
     post:
@@ -100,11 +109,17 @@ paths:
 
       responses:
         '200':
-          description: Montant ajouté avec succès
+          description: La mise à jour du compte a été effectuée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Account"
         '400':
           $ref: "#/components/responses/InvalidRequest"
         '404':
           $ref: "#/components/responses/InvalidID"
+        '500':
+          $ref: "#/components/responses/ServerError"
 
   /addStock:
     post:
@@ -114,7 +129,11 @@ paths:
         - $ref: "#/components/parameters/Stock"
       responses:
         '200':
-          description: Titre ajouté avec succès
+          description: Titre ajouté sur le compte avec succès
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Account"
         '400':
           $ref: "#/components/responses/InvalidRequest"
         '404':
@@ -130,7 +149,11 @@ paths:
         - $ref: "#/components/parameters/Stock"
       responses:
         '200':
-          description: Titre supprimé avec succès
+          description: Titre supprimé du compte avec succès
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Account"
         '400':
           $ref: "#/components/responses/InvalidRequest"
         '404':
@@ -152,6 +175,9 @@ components:
         cash:
           type: number
           example: 1000.40
+        totalValue:
+          type: number
+          example: 2500.75
         stocks:
           type: array
           items:
@@ -172,21 +198,6 @@ components:
         quantity:
           type: integer
           example: 5
-
-    SuccessResponse:
-      type: object
-      properties:
-        message:
-          type: string
-        data:
-          type: object
-      required:
-        - message
-        - data
-      example:
-        message: "Opération réussie"
-        data:
-          key: "value"
 
   responses:
     ServerError:
