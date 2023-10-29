@@ -1,19 +1,244 @@
-openapi: 3.0.3 
+openapi: 3.0.3
 
-info: 
+info:
+  title: Vinci Stock eXchange API
+  description: API pour gérer les comptes, le cash, les titres, les ordres et l'exécution des ordres sur une plateforme de bourse.
+  version: 1.0.0
 
-  title: Vinci Stock eXchange 
+servers:
+  - url: http://localhost:9001
+    description: Development server
 
-  description: place boursière  
+paths:
+  /accounts:
+    get:
+      summary: Récupérer la liste des comptes
+      description: Récupère la liste des comptes des investisseurs.
+      responses:
+        200:
+          description: Succès
+          content:
+            "application/json":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Account"
 
-  version: 1.0.0 
+    post:
+      summary: Créer un nouveau compte
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/Stock"
 
-servers: 
+      responses:
+        '200':
+          $ref: "#/components/schemas/SuccessResponse"
+        '400':
+          $ref: "#/components/responses/InvalidRequest"
+        '500':
+          $ref: "#/components/responses/ServerError"
 
-  - url: http://localhost:9001 
+  /accounts/{id}:
+    parameters:
+      - $ref: "#/components/parameters/AccountId"
 
-    description: Development server 
+    get:
+      summary: Affiche l'état du compte ainsi que sa valeur totale
+      responses:
+        '404':
+          $ref: "#/components/responses/InvalidID"
+        '200':
+          description: Retourne le compte
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/Account"
 
- 
+    put:
+      summary: Mise à jour du compte
+      requestBody:
+        description: Nouvelles valeurs du compte
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/Account"
+      responses:
+        '400':
+          $ref: "#/components/responses/InvalidID"
+        '404':
+          $ref: "#/components/responses/InvalidID"
+        '200':
+          description: Compte mis à jour avec les nouvelles valeurs
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/Account"
 
-paths: 
+    delete:
+      summary: Supprimer le compte
+      responses:
+        '404':
+          $ref: "#/components/responses/InvalidID"
+        '200':
+          description: Compte supprimé avec succès
+
+  /addCash:
+    post:
+      summary: Ajouter de l'argent au compte
+      parameters:
+        - $ref: "#/components/parameters/AccountId"
+        - $ref: "#/components/parameters/Cash"
+
+      responses:
+        '200':
+          description: Montant ajouté avec succès
+        '400':
+          $ref: "#/components/responses/InvalidRequest"
+        '404':
+          $ref: "#/components/responses/InvalidID"
+
+  /addStock:
+    post:
+      summary: Ajouter un titre au compte
+      parameters:
+        - $ref: "#/components/parameters/AccountId"
+        - $ref: "#/components/parameters/Stock"
+      responses:
+        '200':
+          description: Titre ajouté avec succès
+        '400':
+          $ref: "#/components/responses/InvalidRequest"
+        '404':
+          $ref: "#/components/responses/InvalidID"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+  /removeStock:
+    delete:
+      summary: Supprimer un titre du compte
+      parameters:
+        - $ref: "#/components/parameters/AccountId"
+        - $ref: "#/components/parameters/Stock"
+      responses:
+        '200':
+          description: Titre supprimé avec succès
+        '400':
+          $ref: "#/components/responses/InvalidRequest"
+        '404':
+          $ref: "#/components/responses/InvalidID"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+components:
+  schemas:
+    Account:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Marie-Francine"
+        cash:
+          type: number
+          example: 1000.40
+        stocks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Stock"
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+
+    Stock:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "LNRD"
+        quantity:
+          type: integer
+          example: 5
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        data:
+          type: object
+      required:
+        - message
+        - data
+      example:
+        message: "Opération réussie"
+        data:
+          key: "value"
+
+  responses:
+    ServerError:
+      description: Erreur du serveur
+      content:
+        "application/json":
+          schema:
+            $ref: "#/components/schemas/Error"
+          example: "Une erreur interne du serveur s'est produite."
+
+    InvalidID:
+      description: ID inexistant
+      content:
+        "application/json":
+          schema:
+            $ref: "#/components/schemas/Error"
+          example: "Une erreur est survenue."
+
+    InvalidAccount:
+      description: Compte inexistant
+      content:
+        "application/json":
+          schema:
+            $ref: "#/components/schemas/Error"
+          example: "Le compte avec l'ID spécifié n'a pas été trouvé."
+
+    InvalidRequest:
+      description: Requête invalide
+      content:
+        "application/json":
+          schema:
+            $ref: "#/components/schemas/Error"
+          example: "La requête est invalide."
+
+  parameters:
+    AccountId:
+      name: id
+      in: path
+      description: Identifiant du compte
+      required: true
+      schema:
+        type: integer
+        example: 1
+    Cash:
+      name: cash
+      in: query
+      description: montant à ajouter
+      required: true
+      schema:
+        type: number
+        example: 100.60
+    Stock:
+      name: stock
+      in: query
+      description: Détails du titre (nom et quantité)
+      required: true
+      schema:
+        $ref: "#/components/schemas/Stock"
+      example:
+        name: "LNRD"
+        quantity: 10
