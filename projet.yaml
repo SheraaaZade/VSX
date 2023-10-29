@@ -31,7 +31,7 @@ paths:
         content:
           "application/json":
             schema:
-              $ref: "#/components/schemas/Stock"
+                  $ref: "#/components/schemas/Account"
 
       responses:
         '200':
@@ -83,7 +83,13 @@ paths:
         '404':
           $ref: "#/components/responses/InvalidID"
         '200':
-          description: Compte supprimé avec succès
+          description: Succès
+          content:
+            "application/json":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Account"
 
   /addCash:
     post:
@@ -185,35 +191,15 @@ components:
   responses:
     ServerError:
       description: Erreur du serveur
-      content:
-        "application/json":
-          schema:
-            $ref: "#/components/schemas/Error"
-          example: "Une erreur interne du serveur s'est produite."
 
     InvalidID:
-      description: ID inexistant
-      content:
-        "application/json":
-          schema:
-            $ref: "#/components/schemas/Error"
-          example: "Une erreur est survenue."
+      description: "l'ID spécifié n'a pas été trouvé."
 
     InvalidAccount:
       description: Compte inexistant
-      content:
-        "application/json":
-          schema:
-            $ref: "#/components/schemas/Error"
-          example: "Le compte avec l'ID spécifié n'a pas été trouvé."
 
     InvalidRequest:
       description: Requête invalide
-      content:
-        "application/json":
-          schema:
-            $ref: "#/components/schemas/Error"
-          example: "La requête est invalide."
 
   parameters:
     AccountId:
